@@ -1,0 +1,14 @@
+{
+  "author": "Zach McGonigal",
+  "private": true,
+  "version": "0.1.0",
+  "engines": {
+    "node": "0.10"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "connect": "*"
+  }
+}

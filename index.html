@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Ember Starter Kit</title>
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <script type="text/x-handlebars">
+    <div class="jumbotron">
+      <h2>Ember-Data</h2>
+
+      <ul class="nav nav-tabs">
+        {{#link-to 'restful' tagName='li'}}<a href="#">REST</a>{{/link-to}}
+        {{#link-to 'adapter' tagName='li'}}<a href="#">Adapter</a>{{/link-to}}
+        {{#link-to 'model' tagName='li'}}<a href="#">Model</a>{{/link-to}}
+        {{#link-to 'relationships' tagName='li'}}<a href="#">Relationships</a>{{/link-to}}
+        {{#link-to 'store' tagName='li'}}<a href="#">Store</a>{{/link-to}}
+        {{#link-to 'transforms' tagName='li'}}<a href="#">Transforms</a>{{/link-to}}
+      </ul>
+
+      <div class="list-group">
+        {{outlet}}
+      </div>
+    </div>
+  </script>
+
+  <script type="text/x-handlebars" id="relationships">
+    <a class="list-group-item">
+      <h4 class="list-group-item-heading">Post model with many Comments</h4>
+      <p>{{title}}</p>
+      <p>{{body}}</p>
+      <p>isDirty - {{isDirty}}</p>
+      <ul>
+        {{#each comment in comments}}
+          {{comment.message}} - {{comment.author}} isDirty - {{comment.isDirty}} <button {{action 'save' comment}}>Save Comment</button>
+        {{/each}}
+      </ul>
+      <button {{action 'save' model}}>Save Post</button>
+    </a>
+  </script>
+
+  <script type="text/x-handlebars" id="transforms">
+    <a class="list-group-item">
+      <h4 class="list-group-item-heading">Provided Transforms</h4>
+      <pre>
+module.exports = DS.Model.extend({
+  number: DS.attr('number'),
+
+  date: DS.attr('date'),
+
+  string: DS.attr('string'),
+
+  bool: DS.attr('boolean')
+});
+      </pre>
+    </a>
+    <a class="list-group-item">
+      <h4 class="list-group-item-heading">Custom Transform</h4>
+      <pre>
+App.MomentTransform = DS.Transform.extend({
+  //assuming serialized is formatted properly for moment
+  deserialize: function (serialized) {
+    return moment(serialized);
+  },
+  serialize: function (deserialized) {
+    return deserialized.valueOf();
+  }
+});
+      </pre>
+    </a>
+  </script>
+
+  <script type="text/x-handlebars" id="store">
+    <a class="list-group-item">
+      <h4 class="list-group-item-heading">find</h4>
+      <pre>
+this.store.find('model');
+      </pre>
+      <p>will issue a GET and expect an array, usually used to populate the model property of an array controller</p>
+      <pre>
+this.store.all('model');
+      </pre>
+      <p>will only ask the store for all records of type model.</p>
+      <pre>
+this.store.find('model', {
+  color: 'black',
+  legs: 3
+});
+      </pre>
+      <p>will issue a GET with query paramaters and expect an array returned</p>
+      <pre>
+this.store.filter('model', {
+  color: 'black',
+  legs: 3
+});
+      </pre>
+      <p>will search the cache on the store for records of type model that meet the search criteria</p>
+      <pre>
+this.store.find('model', id);
+      </pre>
+      <p>will issue a GET and expect a singular object back, usually used to populate the model property of an object controller</p>
+    </a>
+    <a class="list-group-item">
+      <h4 class="list-group-item-heading">delete</h4>
+      <pre>
+var record = store.createRecord('model');
+record.deleteRecord();
+      </pre>
+      <p>will NOT ISSUE A DELETE!</p>
+      <p>will mark the record as deleted. DO NOT try to use this record anymore.</p>
+    </a>
+    <a class="list-group-item">
+      <h4 class="list-group-item-heading">create</h4>
+      <pre>
+this.store.createRecord('model', {
+  legs: 3,
+  color: 'black'
+});
+      </pre>
+      <p>will NOT ISSUE A POST!</p>
+      <p>will create a new record of type model</p>
+    </a>
+    <a class="list-group-item">
+      <pre>
+record.save.then(resovle, reject);
+      </pre>
+      <p>will issue a POST, PUT or DELETE depending on if it is a new record, you made local changes to the record, or you have deleted the model</p>
+    </a>
+  </script>
+
+  <script type="text/x-handlebars" id="model">
+    <a class="list-group-item">
+      <h4 class="list-group-item-heading">State Hierarchy</h4>
+      <pre>
+  * root
+    * deleted
+      * saved
+      * uncommitted
+      * inFlight
+    * empty
+    * loaded
+      * created
+        * uncommitted
+        * inFlight
+      * saved
+      * updated
+        * uncommitted
+        * inFlight
+    * loading
+      </pre>
+    </a>
+    <a class="list-group-item">
+      <h4 class="list-group-item-heading">Properties</h4>
+      <pre>
+* isLoaded: The record has a populated `data` property. When a record is loaded via `store.find`, `isLoaded` is false until the adapter sets it. When a record is created locally, its `isLoaded` property is always true.
+* isDirty: The record has local changes that have not yet been saved by the adapter. This includes records that have been created (but not yet saved) or deleted
+* isSaving: The record has been committed, but the adapter has not yet acknowledged that the changes have been persisted to the backend.
+* isDeleted: The record was marked for deletion. When `isDeleted` is true and `isDirty` is true, the record is deleted locally but the deletion was not yet persisted. When `isSaving` is true, the change is in-flight. When both `isDirty` and `isSaving` are false, the change has persisted.
+* isError: The adapter reported that it was unable to save local changes to the backend. This may also result in the record having its `isValid` property become false if the adapter reported that server-side validations failed.
+* isNew: The record was created on the client and the adapter did not yet report that it was successfully saved.
+* isValid: No client-side validations have failed and the adapter did not report any server-side validation failures.
+      </pre>
+    </a>
+  </script>
+
+  <script type="text/x-handlebars" id="adapter">
+    <a class="list-group-item">
+      <h4 class="list-group-item-heading">Error Handling</h4>
+        <pre>
+App.ApplicationAdapter = DS.RESTAdapter.extend({
+  ajaxError: function(jqXHR) {
+    var error = this._super(jqXHR);
+
+    if (jqXHR && jqXHR.status === 422) {
+      var jsonErrors = Ember.$.parseJSON(jqXHR.responseText)["errors"];
+      <span class="highlight">return new DS.InvalidError(jsonErrors);</span>
+    } else {
+      return error;
+    }
+  }
+});
+      </pre>
+      <p>The DS.InvalidError must be constructed with a single object whose
+        keys are the invalid model properties, and whose values are the
+        corresponding error messages. For example:
+        <pre>
+return new DS.InvalidError({
+  length: "Must be less than 15",
+  name: "Must not be blank"
+});
+        </pre>
+      </p>
+    </a>
+  </script>
+
+  <script type="text/x-handlebars" id="restful">
+    <a class="list-group-item">
+      <h4 class="list-group-item-heading">GET</h4>
+      <p class="list-group-item-text">
+        <p><b>/cats</b> - expects an array of cats to be returned</p>
+        <p><b>/cats/:cat_id</b> - expects just one cat to be returned</p>
+        <p><b>/cats?color=black&legs=3</b> - expects an array of cats that are black and have 3 legs</p>
+      </p>
+    </a>
+    <a class="list-group-item">
+      <h4 class="list-group-item-heading">POST</h4>
+      <p><b>/cats</b> - will send a cat object, the server persists and sends a 200 back <b>WITH</b>
+       the cat object <b>WITH</b> an id property</p>
+    </a>
+    <a class="list-group-item">
+      <h4 class="list-group-item-heading">PUT</h4>
+      <p><b>/cats</b> - will send the entire cat resource with id to be modified. if a 204 is sent from the
+       server then all is well. if a 200 is sent back with a modified cat, Ember-Data will update its store
+       to reflect what is on the server.</p>
+    </a>
+    <a class="list-group-item">
+      <h4 class="list-group-item-heading">DELETE</h4>
+      <p><b>/cats/:cat_id</b> - will not send anything to the server. Ember-Data will mark the object as
+      deleted in the store upon a 200 from the server</p>
+    </a>
+  </script>
+  <script src="js/libs/jquery-1.10.2.js"></script>
+  <script src="js/libs/handlebars-1.1.2.js"></script>
+  <script src="js/libs/ember-1.4.0.js"></script>
+  <script src="js/libs/ember-data-beta.js"></script>
+  <script src="js/app.js"></script>
+  <!-- to activate the test runner, add the "?test" query string parameter -->
+  <script src="tests/runner.js"></script>
+</body>
+</html>
