@@ -19,12 +19,22 @@
         {{#link-to 'relationships' tagName='li'}}<a href="#">Relationships</a>{{/link-to}}
         {{#link-to 'store' tagName='li'}}<a href="#">Store</a>{{/link-to}}
         {{#link-to 'transforms' tagName='li'}}<a href="#">Transforms</a>{{/link-to}}
+        {{#link-to 'aaron' 1 tagName='li'}}<a href="#">Aaron Resource</a>{{/link-to}}
       </ul>
 
       <div class="list-group">
         {{outlet}}
       </div>
     </div>
+  </script>
+
+  <script type="text/x-handlebars" id="aaron">
+    <a class="list-group-item">
+      <h4 class="list-group-item-heading">Aaron</h4>
+      <p>Name - {{name}}</p>
+      <p>Occupation - {{occupation}}</p>
+      <p>Favorite Book - {{favoriteBook}}</p>
+    </a>
   </script>
 
   <script type="text/x-handlebars" id="relationships">

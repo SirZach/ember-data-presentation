@@ -1,4 +1,8 @@
-App = Ember.Application.create();
+App = Ember.Application.create({
+  LOG_TRANSITIONS: true,
+
+  LOG_TRANSITIONS_INTERNAL: true
+});
 
 App.Router.map(function() {
   // put your routes here
@@ -8,6 +12,7 @@ App.Router.map(function() {
   this.route('store');
   this.route('transforms');
   this.route('relationships');
+  this.resource('aaron', {path: 'aaron/:aaron_id'});
 });
 
 DS.RESTAdapter.reopen({
@@ -30,6 +35,20 @@ App.Comment = DS.Model.extend({
 
   post: DS.belongsTo('post')
 });
+
+App.Aaron = DS.Model.extend({
+  name: DS.attr('string'),
+
+  occupation: DS.attr('string'),
+
+  favoriteBook: DS.attr('string')
+});
+
+//App.AaronRoute = Ember.Route.extend({
+//  deserialize: function (a, b) {
+//    debugger;
+//  }
+//});
 
 App.IndexRoute = Ember.Route.extend({
   model: function() {
