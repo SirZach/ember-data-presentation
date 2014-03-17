@@ -13,6 +13,7 @@ App.Router.map(function() {
   this.route('transforms');
   this.route('relationships');
   this.resource('aaron', {path: 'aaron/:aaron_id'});
+  this.route('dependency-injection');
 });
 
 DS.RESTAdapter.reopen({
@@ -43,12 +44,6 @@ App.Aaron = DS.Model.extend({
 
   favoriteBook: DS.attr('string')
 });
-
-//App.AaronRoute = Ember.Route.extend({
-//  deserialize: function (a, b) {
-//    debugger;
-//  }
-//});
 
 App.IndexRoute = Ember.Route.extend({
   model: function() {

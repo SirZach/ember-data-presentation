@@ -20,12 +20,35 @@
         {{#link-to 'store' tagName='li'}}<a href="#">Store</a>{{/link-to}}
         {{#link-to 'transforms' tagName='li'}}<a href="#">Transforms</a>{{/link-to}}
         {{#link-to 'aaron' 1 tagName='li'}}<a href="#">Aaron Resource</a>{{/link-to}}
+        {{#link-to 'dependency-injection' tagName='li'}}<a href="#">Dependency Injection</a>{{/link-to}}
       </ul>
 
       <div class="list-group">
         {{outlet}}
       </div>
     </div>
+  </script>
+
+  <script type="text/x-handlebars" id="dependency-injection">
+    <a class="list-group-item">
+      <h4 class="list-group-item-heading">Dependency Injection</h4>
+      <pre>
+//App.inject(full_name or type, property name, full_name)
+Ember.onLoad('Ember.Application', function(Application) {
+  Application.initializer({
+    name: "injectStore",
+    before: "store",
+
+    initialize: function(container, application) {
+    application.inject('controller', 'store', 'store:main');
+    application.inject('route', 'store', 'store:main');
+    application.inject('serializer', 'store', 'store:main');
+    application.inject('data-adapter', 'store', 'store:main');
+    }
+  });
+});
+      </pre>
+    </a>
   </script>
 
   <script type="text/x-handlebars" id="aaron">
@@ -174,6 +197,23 @@ record.save.then(resovle, reject);
 * isValid: No client-side validations have failed and the adapter did not report any server-side validation failures.
       </pre>
     </a>
+    <a class="list-group-item">
+      <h4 class="list-group-item-heading">Modifications</h4>
+      <p>Root Key</p>
+      <pre>
+App.PersonAdapter = App.ApplicationAdapter.extend({
+  pathForType: function () {
+    return 'weirdRootKey';
+  }
+});
+      </pre>
+      <p>Endpoints</p>
+      <pre>
+Ember.Inflector.inflector.irregular('formula', 'formulae');
+Ember.Inflector.inflector.uncountable('advice');
+      </pre>
+      <p>App.Formula requests will go to /formulae while App.Advice requests will go to /advice</p>
+    </a>
   </script>
 
   <script type="text/x-handlebars" id="adapter">
@@ -203,6 +243,19 @@ return new DS.InvalidError({
 });
         </pre>
       </p>
+      <h4 class="list-group-item-heading">Modifications</h4>
+      <p>If your API lies on a different domain...</p>
+      <pre>
+DS.RESTAdapter.reopen({
+  host: 'http://twitter.com'
+});
+      </pre>
+      <p>If your API resides in a namespace...</p>
+      <pre>
+DS.RESTAdapter.reopen({
+  namespace: 'api'
+});
+      </pre>
     </a>
   </script>
 
