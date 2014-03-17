@@ -9,6 +9,7 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "connect": "*"
+    "connect": "*",
+    "dyson": "*"
   }
 }

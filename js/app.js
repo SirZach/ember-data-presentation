@@ -10,6 +10,11 @@ App.Router.map(function() {
   this.route('relationships');
 });
 
+DS.RESTAdapter.reopen({
+  host: 'http://localhost:3000',
+  namespace: 'api'
+});
+
 App.Post = DS.Model.extend({
   title: DS.attr('string'),
 
@@ -34,19 +39,18 @@ App.IndexRoute = Ember.Route.extend({
 
 App.RelationshipsRoute = Ember.Route.extend({
   model: function () {
-    var comment = this.store.createRecord('comment', {
-      id: 1,
-      author: 'Zach',
-      message: 'Cool story, bro'
-    });
-
     var post = this.store.createRecord('post', {
       id: 1,
       title: '3 Legged Black Cat',
       body: 'That guy is my homie'
     });
 
-    comment.set('post', post);
+    var comment = this.store.createRecord('comment', {
+      id: 1,
+      author: 'Zach',
+      message: 'Cool story, bro',
+      post: post
+    });
 
     return this.store.find('post', 1);
   },
